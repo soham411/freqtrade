@@ -314,6 +314,9 @@ class DataProvider:
             startup_candles = self.get_required_startup(str(timeframe))
             tf_seconds = timeframe_to_seconds(str(timeframe))
             timerange.subtract_start(tf_seconds * startup_candles)
+            logger.info(f"Loading data for {pair} {timeframe} "
+                        f"from {timerange.start_fmt} to {timerange.stop_fmt}")
+
             self.__cached_pairs_backtesting[saved_pair] = load_pair_history(
                 pair=pair,
                 timeframe=timeframe,
@@ -339,8 +342,9 @@ class DataProvider:
             if add_train_candles:
                 train_candles = freqai_config['train_period_days'] * 86400 / tf_seconds
             total_candles = int(self._config['startup_candle_count'] + train_candles)
-            logger.info(f'Increasing startup_candle_count for freqai to {total_candles}')
-            return total_candles
+            logger.info(
+                f'Increasing startup_candle_count for freqai on {timeframe} to {total_candles}')
+        return total_candles
 
     def get_pair_dataframe(
         self,
